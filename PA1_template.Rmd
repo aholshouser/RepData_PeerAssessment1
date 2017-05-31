@@ -43,10 +43,12 @@ wlktotNA<-sum(wlkNA) ##Count the NA values
 print(wlktotNA)
 
 Replace missing interval with the mean of the 5-min interval
+
 wlk0<-read.csv('activity.csv')
 wlk0$steps[is.na(wlk0$steps)]=wlkTS$steps
 
-###Histogram of the total number of steps taken each day after missing values are imputed
+Histogram of the total number of steps taken each day after missing values are imputed
+
 wlk0Day<-aggregate(steps~date,wlk0, sum)
 hist(wlk0Day$steps, main='Total # of Steps Per Day (Non-NA)', xlab='# of Steps')
 
