@@ -1,5 +1,3 @@
-wlkMean<-mean(wlkDay$steps)
-wlkMedian<-median(wlkDay$steps)---
 title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
@@ -13,34 +11,38 @@ wlk<-read.csv('activity.csv')
 
 ## What is mean total number of steps taken per day?
 
-###Histogram of the total number of steps taken each day
+Histogram of the total number of steps taken each day
+
 wlkDay<-aggregate(steps~date,wlk, sum, na.rm=T)
 hist(wlkDay$steps, main='Total # of Steps Per Day', xlab='# of Steps')
 
-###Mean and median number of steps taken each day
+Mean and median number of steps taken each day
+
 wlkMean<-mean(wlkDay$steps)
 wlkMedian<-median(wlkDay$steps)
 
 ## What is the average daily activity pattern?
 
-###Time series plot of the average number of steps taken
+Time series plot of the average number of steps taken
+
 wlkTS<-aggregate(steps~interval, wlk, mean, na.rm=T)
 plot(wlkTS, main='Time Series by Avg. number of steps', pch=16)
 lines(wlkTS)
 
-###The 5-minute interval that, on average, contains the maximum number of steps
+The 5-minute interval that, on average, contains the maximum number of steps
+
 wlkTSMax<-wlkTS[which.max(wlkTS$steps),]
 
 
 ## Imputing missing values
 
-###Code to describe and show a strategy for imputing missing data
+Code to describe and show a strategy for imputing missing data
 
 wlkNA<-is.na(wlk$steps) ##Identify missing values (NA)
 wlktotNA<-sum(wlkNA) ##Count the NA values
 print(wlktotNA)
 
-###Replace missing interval with the mean of the 5-min interval
+Replace missing interval with the mean of the 5-min interval
 wlk0<-read.csv('activity.csv')
 wlk0$steps[is.na(wlk0$steps)]=wlkTS$steps
 
@@ -51,8 +53,7 @@ hist(wlk0Day$steps, main='Total # of Steps Per Day (Non-NA)', xlab='# of Steps')
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-###Panel plot comparing the average number of steps taken per 5-minute interval across 
-##weekdays and weekends
+Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
 
 library(chron)
 wlk$we=chron::is.weekend(wlk$date) ##TRUE is a weekend / FALSE is a weekday
