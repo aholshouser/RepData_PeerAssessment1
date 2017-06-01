@@ -1,0 +1,95 @@
+---
+title: 'Reproducible Research Project #1'
+author: "Andrew Holshouser"
+date: "May 31, 2017"
+output: html_document
+---
+
+##Loading the data
+
+```{r loading}
+wlk<-read.csv('activity.csv')
+```
+
+##Histogram of the total number of steps taken each day
+
+```{r hist1}
+wlkDay<-aggregate(steps~date,wlk, sum, na.rm=T)
+hist(wlkDay$steps, main='Total # of Steps Per Day', xlab='# of Steps')
+```
+
+##Mean and median number of steps taken each day
+```{r MeanMedian}
+wlkMean<-mean(wlkDay$steps)
+wlkMedian<-median(wlkDay$steps)
+```
+
+Result:
+```{r MeanMedian Result, echo=FALSE}
+print(wlkMean) 
+print(wlkMedian)
+```
+
+##Time series plot of the average number of steps taken
+```{r TimeSeries Plot}
+wlkTS<-aggregate(steps~interval, wlk, mean, na.rm=T)
+plot(wlkTS, main='Time Series by Avg. number of steps', pch=16)
+lines(wlkTS)
+```
+
+##The 5-minute interval that, on average, contains the maximum number of steps
+```{r MaxInterval}
+wlkTSMax<-wlkTS[which.max(wlkTS$steps),]
+```
+
+Result:
+```{r MaxIntervalResult, echo=FALSE}
+print(wlkTSMax)
+```
+
+##Code to describe and show a strategy for imputing missing data
+
+Identify the NA values within the data set
+```{r IdentifyNA}
+wlkNA<-is.na(wlk$steps) ##Identify missing values (NA)
+wlktotNA<-sum(wlkNA) ##Count the NA values
+```
+
+Result: # of values with NA
+```{r IdentifyNAResult, echo=FALSE}
+print(wlktotNA)
+```
+
+Replace missing interval with the mean of the 5-min interval
+```{r ReplaceNA}
+wlk0<-read.csv('activity.csv')
+wlk0$steps[is.na(wlk0$steps)]=wlkTS$steps
+```
+
+Result: # of value with NA after replacement
+```{r ReplaceTot, echo=FALSE}
+sum(is.na(wlk0$steps))
+```
+
+##Histogram of the total number of steps taken each day after missing values are imputed
+```{r Hist2}
+wlk0Day<-aggregate(steps~date,wlk0, sum)
+hist(wlk0Day$steps, main='Total # of Steps Per Day (Non-NA)', xlab='# of Steps')
+```
+
+##Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
+```{r CompareWEWD}
+library(chron)
+wlk$we=chron::is.weekend(wlk$date) ##TRUE is a weekend / FALSE is a weekday
+wlkWE<-subset(wlk, wlk$we==TRUE)
+wlkWD<-subset(wlk, wlk$we==FALSE)
+
+wlkWEDay<-aggregate(steps~date, wlkWE,mean)
+wlkWDDay<-aggregate(steps~date, wlkWD,mean)
+
+par(mfrow=c(1,2), mar=c(4,4,2,1))
+hist(wlkWDDay$steps, main='Weekday', xlab='Avg. # of Steps',col="blue", 
+     ylim=c(0,12))
+hist(wlkWEDay$steps, main='Weekend Day ', xlab='Avg. # of Steps',col="red", 
+     ylim=c(0,12))
+```
